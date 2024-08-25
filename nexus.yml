@@ -1,0 +1,65 @@
+services:
+  nexus:
+    image: focker.ir/sonatype/nexus3:3.71.0-alpine
+    container_name: nexus
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8081:8081
+    volumes:
+      - "nexus-data:/nexus-data"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.nexus.rule=Host(`nexus.tavana.local`)"
+      - "traefik.http.routers.nexus.entrypoints=websecure"
+      - "traefik.http.routers.nexus.tls=true"
+      - "traefik.http.routers.nexus.service=nexus"
+      - "traefik.http.services.nexus.loadbalancer.server.port=8081"
+      - "traefik.http.routers.docker.rule=Host(`docker.tavana.local`)"
+      - "traefik.http.routers.docker.entrypoints=websecure"
+      - "traefik.http.routers.docker.tls=true"
+      - "traefik.http.routers.docker.service=docker"
+      - "traefik.http.services.docker.loadbalancer.server.port=8082"
+
+
+  traefik:
+    image: focker.ir/traefik:3.1
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--log.level=INFO"
+      - "--log.filepath=/log-file.log"
+      - "--api=true"
+      - "--ping=true"
+      - "--accesslog=true"
+      - "--accesslog.fields.names.StartUTC=drop"
+      - "--accesslog.bufferingsize=250"
+      - "--log.format=json"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.network=traefik"
+      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--metrics.prometheus=true"
+      - "--entrypoints.metrics.address=:8082"
+      - "--metrics.prometheus.entryPoint=metrics"
+      - "--providers.file.directory=/certs"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./certs:/certs"
+    networks:
+      - traefik
+  
+volumes:
+  nexus-data: {}
+
+networks:
+  traefik:
+    name: traefik
