@@ -1,0 +1,53 @@
+---
+- name: Some docker configurations
+  hosts: swarm
+  gather_facts: false
+  tasks:
+    - name: Create /etc/docker/daemon.json
+      ansible.builtin.copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "insecure-registries" : ["docker.tavana.local"],
+            "metrics-addr" : "0.0.0.0:9323",
+            "experimental" : true
+          }
+        owner: root
+        group: root
+        mode: "0644"
+      become: true
+      notify:
+        - Restart docker
+
+    - name: Ensure /root/.docker directory exists
+      ansible.builtin.file:
+        path: /root/.docker
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      become: true
+
+    - name: Docker login
+      ansible.builtin.copy:
+        dest: /root/.docker/config.json
+        content: |
+          {
+            "auths": {
+              "docker.tavana.local": {
+                "auth": "{{ docker_auth }}"
+              }
+            }
+          }
+        owner: root
+        group: root
+        mode: "0644"
+        directory_mode: "0755"
+      become: true
+
+  handlers:
+    - name: Restart docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+      become: true

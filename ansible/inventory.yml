@@ -1,0 +1,12 @@
+all:
+  children:
+    swarm:
+      hosts:
+        tavana-swarm1: {}
+        tavana-swarm2: {}
+        tavana-swarm3: {}
+  hosts:
+    tavana-runner: {}
+    tavana-nexus: {}
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.11

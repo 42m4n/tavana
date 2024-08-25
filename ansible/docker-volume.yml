@@ -1,0 +1,28 @@
+---
+- name: docker volumes and its contents.
+- hosts: swarm
+  become: true
+  tasks:
+    - name: Ensure requests is installed
+      ansible.builtin.apt:
+        name: python3-requests
+        state: present
+
+    - name: Create docker volume
+      community.docker.docker_volume:
+        volume_name: "{{ item }}"
+        state: present
+        driver: local
+      loop:
+        - traefik-acme
+        - prometheus
+
+    - name: copy volume content
+      ansible.builtin.copy:
+        dest: /var/lib/docker/volumes/"{{ item.dst }}"/_data/
+        src: "{{ item.src }}"
+      loop:
+        - { src: ~/tavana/traefik/tls.yml, dst: traefik-acme }
+        - { src: ~/tavana/traefik/domain.key, dst: traefik-acme }
+        - { src: ~/tavana/traefik/domain.cert, dst: traefik-acme }
+        - { src: ~/tavana/monlog/prometheus.yml, dst: traefik-acme }

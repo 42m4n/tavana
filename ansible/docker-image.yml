@@ -1,0 +1,12 @@
+---
+- name: Pull docker images
+  hosts: swarm
+  become: true
+  tasks:
+    - name: Check if image exists
+      community.docker.docker_image_pull:
+        name: docker.tavana.local/{{ item }}
+      loop:
+        - traefik:v3.1
+        - prom/prometheus:v2.53.2
+        - grafana/grafana:11.1.4
