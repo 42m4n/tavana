@@ -1,0 +1,4 @@
+tls:
+  certificates:
+    - certFile: /acme/domain.cert
+      keyFile: /acme/domain.key
