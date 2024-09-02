@@ -41,8 +41,7 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "grafana"
         },
         "enable": true,
         "hide": true,
@@ -61,8 +60,7 @@
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_EU02}"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -108,8 +106,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -125,8 +122,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_EU02}"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -171,8 +167,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -188,8 +183,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_EU02}"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -234,8 +228,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -251,8 +244,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_EU02}"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -356,8 +348,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -416,8 +407,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_EU02}"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -517,8 +507,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -530,8 +519,7 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -612,8 +600,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_EU02}"
+        "type": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -696,8 +683,7 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -709,8 +695,7 @@
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_EU02}"
+            "type": "prometheus"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -818,8 +803,7 @@
       {
         "current": {},
         "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_EU02}"
+          "type": "prometheus"
         },
         "definition": "label_values(__name__)",
         "hide": 0,
@@ -841,8 +825,7 @@
         "allValue": ".+",
         "current": {},
         "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_EU02}"
+          "type": "prometheus"
         },
         "definition": "label_values(job)",
         "hide": 0,
@@ -870,7 +853,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Prometheus Metrics Overview",
-  "uid": "b0b89a23-8f37-4bfe-962a-f329a654e987",
   "version": 3,
   "weekStart": "",
   "gnetId": 19341,

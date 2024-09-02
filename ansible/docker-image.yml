@@ -8,5 +8,6 @@
         name: docker.tavana.local/{{ item }}
       loop:
         - traefik:v3.1
-        - prom/prometheus:v2.53.2
-        - grafana/grafana:11.1.4
+        - prom/prometheus:v2.54.1
+        - grafana/grafana:11.2.0
+        - bitnami/node-exporter

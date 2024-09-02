@@ -9,6 +9,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
       - --config.file=/etc/prometheus/prometheus.yml
+    user: "root"
     deploy:
       labels:
         - "traefik.enable=true"
@@ -65,6 +66,23 @@ services:
         - "traefik.http.routers.grafana-secure.tls=true"
         - "traefik.http.routers.grafana-secure.tls.certresolver=mycert"
         - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+  node_exporter:       
+    image: ${NEXUS_URL}/bitnami/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/host'
+      - '--collector.filesystem.ignored-mount-points="^(/rootfs|/host|)/(sys|proc|dev|host|etc)($$|/)"'
+      - '--collector.filesystem.ignored-fs-types="^(sys|proc|auto|cgroup|devpts|ns|au|fuse\.lxc|mqueue)(fs|)$$"'
+    deploy:
+      mode: global
+    networks:
+      - prometheus
 
 networks:
   traefik-net:
