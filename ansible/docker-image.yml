@@ -11,3 +11,4 @@
         - prom/prometheus:v2.54.1
         - grafana/grafana:11.2.0
         - bitnami/node-exporter
+        - minio/minio:RELEASE.2024-08-29T01-40-52Z

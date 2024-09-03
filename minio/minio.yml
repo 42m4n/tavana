@@ -1,0 +1,149 @@
+networks:
+# minio:
+#   name: minio
+#   external: true
+  traefik-net:
+    external: true
+  prometheus:
+    external: true
+
+volumes:
+  minio-data:
+
+# configs:
+#   mimir-policy:
+#     file: ./mimir-policy.json
+#   loki-policy:
+#     file: ./loki-policy.json
+#   backup-policy:
+#     file: ./backup-policy.json
+
+# Setting YAML indicators , to prevent redundancy.
+
+x-defaults-minio: &default-minio
+  image: ${NEXUS_URL}/minio/minio:${MINIO_MINIO_VERSION:-latest}
+  environment: 
+    MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+    MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    TZ: Asia/Tehran
+  command: 
+    - "server"
+    - "--console-address"
+    - ":9001"
+    - "http://minio-{1...3}:9000/data"
+  networks:
+#   - minio
+    - traefik-net
+    - prometheus
+  volumes:
+    - minio-data:/data
+
+x-default-deploy: &default-deploy
+  replicas: 1
+  update_config:
+    parallelism: 1
+    delay: 30s
+    order: stop-first
+    failure_action: rollback
+  rollback_config:
+    parallelism: 1
+    delay: 30s
+  restart_policy:
+    condition: on-failure
+    delay: 30s
+    max_attempts: 3
+    window: 120s
+
+x-default-labels: &default-labels
+  labels:
+    - "traefik.enable=true"
+    - "traefik.docker.network=traefik-net"
+    - "traefik.http.routers.minio.entrypoints=http"
+    - "traefik.http.routers.minio.rule=Host(`${MINIO_SUB}.${DOMAIN}`)"
+    - "traefik.http.routers.minio.middlewares=https-redirect"
+    - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+    - "traefik.http.routers.minio-secure.entrypoints=https"
+    - "traefik.http.routers.minio-secure.rule=Host(`${MINIO_SUB}.${DOMAIN}`)"
+    - "traefik.http.routers.minio-secure.tls=true"
+    - "traefik.http.routers.minio-secure.tls.certresolver=mycert"
+    - "traefik.http.services.minio.loadbalancer.server.port=9001"
+
+services:
+  minio:
+    <<: *default-minio
+    hostname: minio-1
+    deploy:
+      <<: [*default-deploy, *default-labels]
+      placement:
+        constraints:
+          - node.hostname == ${MINIO_NODE1}
+
+  minio-2:
+    <<: *default-minio
+    hostname: minio-2
+    deploy:
+      <<: [*default-deploy, *default-labels]
+      placement:
+        constraints:
+          - node.hostname == ${MINIO_NODE2}
+
+  minio-1:
+    <<: *default-minio
+    hostname: minio-3
+    deploy:
+      <<: [*default-deploy, *default-labels]
+      placement:
+        constraints:
+          - node.hostname == ${MINIO_NODE3}
+
+# createbuckets:
+#   image: quay.io/minio/mc:${MINIO_MC_VERSION:-latest}
+#   depends_on:
+#     - minio
+#     - minio-2 
+#   networks:
+#     - minio
+#   configs:
+#     - source: mimir-policy
+#       target: /tmp/mimir-policy.json
+#     - source: loki-policy
+#       target: /tmp/loki-policy.json
+#     - source: backup-policy
+#       target: /tmp/backup-policy.json
+#   deploy:
+#     replicas: 1
+#     restart_policy:
+#       condition: none
+#   entrypoint: >
+#     /bin/bash -c "
+#       sleep 10 ;
+#       /usr/bin/mc alias set myminio http://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD ;
+#       for bucket in $BUCKETS ; do
+#         if ! /usr/bin/mc ls myminio/$$bucket ; then
+#           /usr/bin/mc mb myminio/$$bucket ;
+#           /usr/bin/mc policy set public myminio/$$bucket ;
+#         fi ;
+#       done ;
+#       if ! /usr/bin/mc admin policy info myminio mimir-policy; then
+#         /usr/bin/mc admin policy create myminio mimir-policy /tmp/mimir-policy.json;
+#       fi;
+#       if ! /usr/bin/mc admin policy info myminio loki-policy; then
+#         /usr/bin/mc admin policy create myminio loki-policy /tmp/loki-policy.json;
+#       fi;
+#       if ! /usr/bin/mc admin policy info myminio backup-policy; then
+#         /usr/bin/mc admin policy create myminio backup-policy /tmp/backup-policy.json;
+#       fi;
+#       if ! /usr/bin/mc admin user info myminio $MINIO_MIMIR_USER; then
+#         /usr/bin/mc admin user add myminio $MINIO_MIMIR_USER $MINIO_MIMIR_PASSWORD;
+#         /usr/bin/mc admin policy attach myminio mimir-policy --user $MINIO_MIMIR_USER
+#       fi;
+#       if ! /usr/bin/mc admin user info myminio $MINIO_BACKUP_USER; then
+#         /usr/bin/mc admin user add myminio $MINIO_BACKUP_USER $MINIO_BACKUP_PASSWORD;
+#         /usr/bin/mc admin policy attach myminio backup-policy --user $MINIO_BACKUP_USER
+#       fi;
+#       if ! /usr/bin/mc admin user info myminio $MINIO_LOKI_USER; then
+#         /usr/bin/mc admin user add myminio $MINIO_LOKI_USER $MINIO_LOKI_PASSWORD;
+#         /usr/bin/mc admin policy attach myminio backup-policy --user $MINIO_LOKI_USER
+#       fi;
+#       exit 0;
+#     "
