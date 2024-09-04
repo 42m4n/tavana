@@ -1,7 +1,6 @@
 networks:
-# minio:
-#   name: minio
-#   external: true
+  minio:
+    external: true
   traefik-net:
     external: true
   prometheus:
@@ -32,9 +31,13 @@ x-defaults-minio: &default-minio
     - ":9001"
     - "http://minio-{1...3}:9000/data"
   networks:
-#   - minio
-    - traefik-net
-    - prometheus
+    minio:
+      aliases:
+        - minio
+    traefik-net:
+    prometheus:
+      aliases:
+        - miniop
   volumes:
     - minio-data:/data
 

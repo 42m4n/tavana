@@ -52,3 +52,31 @@ scrape_configs:
         target_label: __address__
         regex: '(.*):(.*)'
         replacement: '$1:9100'
+
+  - job_name: minio-job
+    bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcm9tZXRoZXVzIiwic3ViIjoiYWRtaW4iLCJleHAiOjQ4NzkwNzg5NTF9.v3QlwSXomQpVko_iYpD3Be1s1FsnigPVtxDYPRxxJ_7vmVSeXAtu25vKC1Y8w1lPIt0vD2M_gXpFPZqFWkGroA
+    metrics_path: /minio/v2/metrics/cluster
+    scheme: http
+    static_configs:
+    - targets: ['miniop:9000']
+  - job_name: minio-job-node
+    bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcm9tZXRoZXVzIiwic3ViIjoiYWRtaW4iLCJleHAiOjQ4NzkwODA0ODd9.pE_x8qSYsgURboU0lzBN_lW1UKNqH8OGeRn98wP3Mte65iMIAac7OW2tnyF8mzKhHSGYSQZg7qu0BaN7jcnsrw
+    metrics_path: /minio/v2/metrics/node
+    scheme: http
+    static_configs:
+    - targets: 
+      - 'minio-1:9000'
+      - 'minio-2:9000'
+      - 'minio-3:9000'
+  - job_name: minio-job-bucket
+    bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcm9tZXRoZXVzIiwic3ViIjoiYWRtaW4iLCJleHAiOjQ4NzkwODA2Mjh9.2mnsS_-oihQSFjZyctkeiD7qG97pK43PTQcQ0NoYWkNywzTz3ituZe-UZSryT2CTJm7JkFGl3GNCO8kPoUkfFQ
+    metrics_path: /minio/v2/metrics/bucket
+    scheme: http
+    static_configs:
+    - targets: ['miniop:9000']
+  - job_name: minio-job-resource
+    bearer_token: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJwcm9tZXRoZXVzIiwic3ViIjoiYWRtaW4iLCJleHAiOjQ4NzkwODA2ODJ9.oGwTbp9pve6eZc1N7zpQnV077Mn0valMol7_thBFaZ2kZsf7li0QbM9OVwQKzP2c0KkjyAoLy8g2EzEQicvS3Q
+    metrics_path: /minio/v2/metrics/resource
+    scheme: http
+    static_configs:
+    - targets: ['miniop:9000']

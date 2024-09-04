@@ -15,11 +15,6 @@
     #        - python3-yaml
     #      state: present
 
-    # - name: Load global environment variables from file
-    #   ansible.builtin.include_vars:
-    #     file: ../var.env
-    #     name: env_vars
-
     - name: Load environment variables for each service
       ansible.builtin.include_vars:
         file: ../{{ item }}/{{ item }}.env
@@ -42,6 +37,7 @@
       loop:
         - traefik-net
         - prometheus
+        - minio
 
     - name: Deploy Docker Stacks using compose files
       community.docker.docker_stack:
