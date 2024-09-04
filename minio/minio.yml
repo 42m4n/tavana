@@ -69,7 +69,7 @@ x-default-labels: &default-labels
     - "traefik.http.services.minio.loadbalancer.server.port=9001"
 
 services:
-  minio:
+  minio-1:
     <<: *default-minio
     hostname: minio-1
     deploy:
@@ -87,7 +87,7 @@ services:
         constraints:
           - node.hostname == ${MINIO_NODE2}
 
-  minio-1:
+  minio-3:
     <<: *default-minio
     hostname: minio-3
     deploy:

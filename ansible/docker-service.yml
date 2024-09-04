@@ -1,7 +1,38 @@
 ---
 - name: Deploy Docker Stacks on Docker Swarm
-  hosts: swarm
+  hosts: tavana-swarm2
+  become: true
+  vars:
+    services:
+      - traefik
+      - monlog
+      - minio
   tasks:
+    #   - name: Install dependencies to load compose file.
+    #    ansible.builtin.apt:
+    #      name:
+    #        - python3-jsondiff
+    #        - python3-yaml
+    #      state: present
+
+    # - name: Load global environment variables from file
+    #   ansible.builtin.include_vars:
+    #     file: ../var.env
+    #     name: env_vars
+
+    - name: Load environment variables for each service
+      ansible.builtin.include_vars:
+        file: ../{{ item }}/{{ item }}.env
+        name: "{{ item }}_vars"
+      loop: "{{ services }}"
+
+    - name: Copy service compose files to /opt directory
+      ansible.builtin.copy:
+        src: ../{{ item }}/{{ item }}.yml
+        dest: /opt
+        mode: "0600"
+      loop: "{{ services }}"
+
     - name: Ensure the Docker networks exist
       community.docker.docker_network:
         name: "{{ item }}"
@@ -12,29 +43,10 @@
         - traefik-net
         - prometheus
 
-    - name: Set environment variables
-      ansible.builtin.set_fact:
-        DOMAIN: tavana.local
-        NEXUS_URL: docker.{{ DOMAIN }}
-
-    - name: Include environment variables from traefik.env
-      ansible.builtin.include_vars:
-        file: traefik/traefik.env
-
-    - name: Deploy Traefik stack
-      ansible.builtin.command: docker stack deploy -c traefik/traefik.yml --detach=true traefik
-      environment:
-        DOMAIN: "{{ DOMAIN }}"
-        NEXUS_URL: "{{ NEXUS_URL }}"
-      become: true
-
-    - name: Include environment variables from monlog.env
-      ansible.builtin.include_vars:
-        file: monlog/monlog.env
-
-    - name: Deploy Prometheus stack
-      ansible.builtin.command: docker stack deploy -c monlog/monlog.yml --detach=true prometheus_stack
-      environment:
-        DOMAIN: "{{ DOMAIN }}"
-        NEXUS_URL: "{{ NEXUS_URL }}"
-      become: true
+    - name: Deploy Docker Stacks using compose files
+      community.docker.docker_stack:
+        name: "{{ item }}"
+        compose:
+          - /opt/{{ item }}.yml
+      environment: "{{ lookup('vars', item + '_vars') }}"
+      loop: "{{ services }}"
