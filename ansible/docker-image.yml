@@ -2,13 +2,27 @@
 - name: Pull docker images
   hosts: swarm
   become: true
+  vars:
+    services:
+      - traefik
+      - monlog
+      - minio
   tasks:
+    - name: Load environment variables for each service
+      ansible.builtin.include_vars:
+        file: ../{{ item }}/{{ item }}.env
+        name: "{{ item }}_vars"
+      loop: "{{ services }}"  
+
     - name: Check if image exists
       community.docker.docker_image_pull:
         name: docker.tavana.local/{{ item }}
       loop:
-        - traefik:v3.1
-        - prom/prometheus:v2.54.1
-        - grafana/grafana:11.2.0
+        - traefik:{{ traefik_vars.TRAEFIK_TAG }}
+        - prom/prometheus:{{ monlog_vars.PROM_TAG }}
+        - grafana/grafana:{{ monlog_vars.GRAFANA_TAG }}
         - bitnami/node-exporter
-        - minio/minio:RELEASE.2024-08-29T01-40-52Z
+        - minio/minio:{{ minio_vars.MINIO_MINIO_VERSION }}
+        - minio/mc:{{ minio_vars.MINIO_MC_VERSION }}
+        - grafana/mimir:{{ monlog_vars.MIMIR_TAG }}
+

@@ -20,6 +20,7 @@
         file: ../{{ item }}/{{ item }}.env
         name: "{{ item }}_vars"
       loop: "{{ services }}"
+      tags: deploy
 
     - name: Copy service compose files to /opt directory
       ansible.builtin.copy:
@@ -46,3 +47,4 @@
           - /opt/{{ item }}.yml
       environment: "{{ lookup('vars', item + '_vars') }}"
       loop: "{{ services }}"
+      tags: deploy

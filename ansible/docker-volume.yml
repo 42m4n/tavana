@@ -12,6 +12,8 @@
         - traefik-acme
         - prometheus
         - grafana
+        - minio-policies
+        - mimir
 
     - name: Copy volume content
       ansible.builtin.copy:
@@ -24,3 +26,5 @@
         - { src: ../monlog/prometheus.yml, dst: prometheus }
         - { src: ../monlog/alerts/, dst: prometheus }
         - { src: ../monlog/grafana/, dst: grafana }
+        - { src: ../monlog/mimir.yml, dst: mimir }
+        - { src: ../minio/policies/, dst: minio-policies }

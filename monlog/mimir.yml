@@ -1,0 +1,43 @@
+target: all,ruler,alertmanager,overrides-exporter
+
+server:
+  http_listen_port: 3100
+  log_level: info
+
+limits:
+  max_label_names_per_series: 35
+  compactor_blocks_retention_period: 3m
+
+
+memberlist:
+  join_members: [mimir-1:7946, mimir-2:7946, mimir-3:7946]
+  # advertise_addr: ADVERTISE_ADDR_REPLACE
+
+distributor:
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: memberlist
+
+common:
+  storage:
+    backend: s3
+    s3:
+      endpoint: miniop:9000
+      # access_key_id: ${MINIO_MIMIR_USER}
+      # secret_access_key: ${MINIO_MIMIR_PASSWORD}
+      insecure: true
+      bucket_name: mimir
+
+# Blocks storage requires a prefix when using a common object storage bucket.
+blocks_storage:
+  s3:
+    bucket_name: mimir-blocks
+
+ruler_storage:
+  s3:
+    bucket_name: mimir-ruler
+
+alertmanager_storage:
+  s3:
+    bucket_name: mimir-alertmanager

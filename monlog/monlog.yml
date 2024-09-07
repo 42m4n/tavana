@@ -69,6 +69,7 @@ services:
 
   node_exporter:       
     image: ${NEXUS_URL}/bitnami/node-exporter
+    hostname: node_exporter-{{.Task.Slot}}
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -84,6 +85,42 @@ services:
     networks:
       - prometheus
 
+  mimir:
+    image: ${NEXUS_URL}/grafana/mimir:${MIMIR_TAG}
+    hostname: mimir-{{.Task.Slot}}
+    command: 
+      - -config.expand-env=true
+      - -config.file=/etc/mimir/mimir.yml
+    networks:
+      - prometheus
+    volumes:
+      - mimir:/etc/mimir
+    environment:
+      AWS_ACCESS_KEY_ID: ${MINIO_MIMIR_USER}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_MIMIR_PASSWORD}
+    # configs:
+    #   - source: mimir.yml
+    #     target: /etc/mimir/mimir.yml
+#     - source: alertmanager-fallback-config.yml
+#       target: /etc/mimir/alertmanager-fallback-config.yml
+    deploy:
+      replicas: ${GRAFANA_MIMIR_REPLICAS:-3}
+      placement:
+        max_replicas_per_node: 1
+      update_config:
+        parallelism: 1
+        delay: 30s
+        order: stop-first
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 30s
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+
 networks:
   traefik-net:
     external: true
@@ -95,7 +132,15 @@ volumes:
     external: true
   grafana:
     external: true
+  mimir:
+    external: true
 
 secrets:
   grafana_admin_password:
     external: true
+
+# configs:
+#   mimir.yml:
+#     file: mimir.yml
+#   prometheus.yml:
+#     file: prometheus.yml
