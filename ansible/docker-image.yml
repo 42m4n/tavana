@@ -12,7 +12,7 @@
       ansible.builtin.include_vars:
         file: ../{{ item }}/{{ item }}.env
         name: "{{ item }}_vars"
-      loop: "{{ services }}"  
+      loop: "{{ services }}"
 
     - name: Check if image exists
       community.docker.docker_image_pull:
@@ -24,5 +24,4 @@
         - bitnami/node-exporter
         - minio/minio:{{ minio_vars.MINIO_MINIO_VERSION }}
         - minio/mc:{{ minio_vars.MINIO_MC_VERSION }}
-        - grafana/mimir:{{ monlog_vars.MIMIR_TAG }}
-
+        - 4rman/grafana-mimir:{{ monlog_vars.MIMIR_TAG }}-alpine

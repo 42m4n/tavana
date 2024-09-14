@@ -86,11 +86,9 @@ services:
       - prometheus
 
   mimir:
-    image: ${NEXUS_URL}/grafana/mimir:${MIMIR_TAG}
+    image: ${NEXUS_URL}/4rman/grafana-mimir:${MIMIR_TAG}-alpine
     hostname: mimir-{{.Task.Slot}}
-    command: 
-      - -config.expand-env=true
-      - -config.file=/etc/mimir/mimir.yml
+    entrypoint: ["sh", "/etc/mimir/mimir-entrypoint.sh"]
     networks:
       - prometheus
     volumes:

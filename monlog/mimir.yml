@@ -11,7 +11,7 @@ limits:
 
 memberlist:
   join_members: [mimir-1:7946, mimir-2:7946, mimir-3:7946]
-  # advertise_addr: ADVERTISE_ADDR_REPLACE
+  advertise_addr: ADVERTISE_ADDR_REPLACE
 
 distributor:
   ring:

@@ -27,4 +27,5 @@
         - { src: ../monlog/alerts/, dst: prometheus }
         - { src: ../monlog/grafana/, dst: grafana }
         - { src: ../monlog/mimir.yml, dst: mimir }
+        - { src: ../monlog/mimir-entrypoint.sh, dst: mimir }
         - { src: ../minio/policies/, dst: minio-policies }
