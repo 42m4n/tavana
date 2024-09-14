@@ -1,0 +1,10 @@
+---
+- name: Os configurations
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install some packages
+      ansible.builtin.apt:
+        name:
+          - systemd-timesyncd
+      become: true

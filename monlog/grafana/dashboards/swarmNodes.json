@@ -3260,9 +3260,7 @@
             "value": ""
           },
           "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+            "type": "prometheus"          },
           "definition": "",
           "hide": 0,
           "includeAll": false,
@@ -3292,9 +3290,7 @@
             "value": "Swarm3"
           },
           "datasource": {
-            "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
-          },
+            "type": "prometheus"          },
           "definition": "label_values(node_exporter_build_info{name='$name'},instance)",
           "hide": 0,
           "includeAll": false,

@@ -1,9 +1,20 @@
 apiVersion: 1
 
 datasources:
-- name: Prometheus
+# - name: Prometheus
+#   type: prometheus
+#   access: proxy
+#   url: http://prometheus:9090
+#   editable: true
+#   isDefault: true
+
+- name: mimir
   type: prometheus
   access: proxy
-  url: http://prometheus:9090
+  url: http://mimir:3100/prometheus
   editable: true
   isDefault: true
+  jsonData:
+    httpHeaderName1: 'X-Scope-OrgId'
+  secureJsonData:
+    httpHeaderValue1: 'monster'
